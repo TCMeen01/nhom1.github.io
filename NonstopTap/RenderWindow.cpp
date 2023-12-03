@@ -19,7 +19,7 @@ renderWindow::renderWindow()
 renderWindow::renderWindow(std::string titleWindow, int SCREEN_WIDTH, int SCREEN_HEIGHT)
 {
     gWindow = SDL_CreateWindow(titleWindow.c_str(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_ALLOW_HIGHDPI);
-	gRender = SDL_CreateRenderer(gWindow, -1, SDL_RENDERER_ACCELERATED);
+	gRender = SDL_CreateRenderer(gWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 }
 
 renderWindow::~renderWindow()
@@ -52,14 +52,21 @@ void renderWindow::cleanScreen()
     SDL_RenderClear(gRender);
 }
 
-void renderWindow::render(int x, int y, SDL_Texture* srcTexture)
+void renderWindow::render(int x, int y, SDL_Texture* srcTexture, SDL_Rect *clip, double scale)
 {
     SDL_Rect srcClip, dstClip;
-    srcClip.x = srcClip.y = 0;
+    if (clip == NULL)
+    {
+        srcClip.x = srcClip.y = 0;
+        SDL_QueryTexture(srcTexture, NULL, NULL, &srcClip.w, &srcClip.h);
+    }
+    else
+    {
+        srcClip = {clip->x, clip->y, clip->w, clip->h};
+    }
+    std::cerr << "print size " << srcClip.w << ' ' << srcClip.h << std::endl;
 
-    SDL_QueryTexture(srcTexture, NULL, NULL, &srcClip.w, &srcClip.h);
-
-    dstClip = {x, y, srcClip.w, srcClip.h};
+    dstClip = {x, y, int(srcClip.w * scale), int(srcClip.h * scale)};
 
     SDL_RenderCopy(gRender, srcTexture, &srcClip, &dstClip);
 }
@@ -80,9 +87,10 @@ void renderWindow::renderFillRect(int x, int y, int w, int h, int r, int g, int 
 
 void renderWindow::render(int x, int y, TTF_Font* font, std::string text, SDL_Color textColor)
 {
-    SDL_Surface* textSurface = TTF_RenderText_Blended(font, text.c_str(), textColor);
+    SDL_Surface* textSurface = TTF_RenderText_Blended_Wrapped(font, text.c_str(), textColor, 0);
     SDL_Texture* textTexture = SDL_CreateTextureFromSurface(gRender, textSurface);
 
+    std::cerr << "print word " << text << std::endl;
     render(x, y, textTexture);
 
     SDL_FreeSurface(textSurface);
