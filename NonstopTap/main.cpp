@@ -31,6 +31,7 @@ const int SCREEN_HEIGHT = 800;
 //Check if the game is still being played
 bool runningGame = true;
 
+//Check if the mouse point is inside the hitbox
 bool insideHitbox(SDL_Rect rect)
 {
 	int x, y;
