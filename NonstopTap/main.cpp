@@ -15,6 +15,8 @@
 #include "MixerManager.h"
 #include "LTexture.h"
 
+
+//Đánh số gamemode: 0 ~ Endurance; 1 ~ Frenzy; 2 ~ Pattern
 enum GAMEMODE_CODE
 {
 	ENDURANCE,
