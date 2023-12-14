@@ -24,7 +24,7 @@ enum GAMEMODE_CODE
 	PATTERN
 };
 
-//Screen dimension constants
+//Kích thước màn hình 800 x 800
 const int SCREEN_WIDTH = 800;
 const int SCREEN_HEIGHT = 800;
 
